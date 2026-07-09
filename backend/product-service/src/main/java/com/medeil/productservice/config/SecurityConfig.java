@@ -16,25 +16,36 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-	private final Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter;
+	private final Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter;	
 	
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	@Bean
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		System.out.println("=== Product SecurityConfig Loaded ===");
 
-        http
-            .csrf(csrf -> csrf.disable())
+	    http
+	        .csrf(csrf -> csrf.disable())
 
-            .authorizeHttpRequests(auth -> auth
-                    .anyRequest().authenticated()
-            )
+	        .authorizeHttpRequests(auth -> auth
+	            .requestMatchers(
+	                "/swagger-ui.html",
+	                "/swagger-ui/**",
+	                "/v3/api-docs/**",
+	                "/v3/api-docs",
+	                "/swagger-resources/**",
+	                "/webjars/**"
+	            ).permitAll()
 
-            .oauth2ResourceServer(oauth2 ->
-                    oauth2.jwt(jwt ->
-                            jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)
-                    )
-            );
+	            .anyRequest().authenticated()
+	        )
 
-        return http.build();
-    }
+	        .oauth2ResourceServer(oauth2 ->
+	            oauth2.jwt(jwt ->
+	                jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)
+	            )
+	        );
+
+	    return http.build();
+	}
+    
 
 }

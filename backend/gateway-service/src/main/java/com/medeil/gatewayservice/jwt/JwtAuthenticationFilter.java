@@ -28,6 +28,7 @@ public class JwtAuthenticationFilter implements WebFilter {
                              WebFilterChain chain) {
 
         String path = exchange.getRequest().getURI().getPath();
+        System.out.println("Gateway Path = " + path);
 
         // Public Endpoints
         if (path.startsWith("/api/auth")
@@ -35,6 +36,7 @@ public class JwtAuthenticationFilter implements WebFilter {
                 || path.startsWith("/v3/api-docs")
                 || path.startsWith("/actuator")) {
 
+        	 System.out.println("Skipping JWT Filter");
             return chain.filter(exchange);
         }
 
