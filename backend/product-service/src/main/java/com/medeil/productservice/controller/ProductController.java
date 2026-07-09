@@ -3,7 +3,8 @@ package com.medeil.productservice.controller;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,22 +27,28 @@ import com.medeil.productservice.dto.ProductDTO;
 import com.medeil.productservice.service.ProductService;
 import com.medeil.productservice.util.ApiResponse;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 
 @RestController
 @RequestMapping("/api/products")
 @Validated
+@RequiredArgsConstructor
+@SecurityRequirement(name = "Bearer Authentication")
 public class ProductController {
 
-	@Autowired
-	private ProductService productser;
+	
+	private final ProductService productser;
+	
+	private static final Logger log = LoggerFactory.getLogger(ProductController.class);
 	
 	@PostMapping
 	@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ProductDTO>>  saveProduct(
             @Valid @RequestBody ProductDTO dto) {
-
-        //return new ResponseEntity<>(productser.save(dto),HttpStatus.CREATED);
+       
 		ProductDTO saved = productser.save(dto);
 
 		return new ResponseEntity<>(
@@ -65,8 +72,9 @@ public class ProductController {
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public ResponseEntity<ApiResponse<ProductDTO>> getProductById(
             @PathVariable("id") Long id) {
-
-        //return ResponseEntity.ok(productser.getById(id));
+	
+    	System.out.println("Inside getProductById");
+    	log.info("Fetching Product {}", id);
     	ProductDTO dto = productser.getById(id);
 
     	return ResponseEntity.ok(
@@ -84,44 +92,6 @@ public class ProductController {
     	);
     }
 
-   /* @GetMapping
-    public ResponseEntity<List<ProductDTO>> getAllProducts() {
-
-        return ResponseEntity.ok(productser.getAll());
-    }*/
-    
-    /*@GetMapping
-    public ResponseEntity<ApiResponse<Page<ProductDTO>>> getAllProducts(
-            Pageable pageable) {
-
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "Products fetched successfully",
-                        productser.getAll(pageable)
-                ));
-
-    }*/
-    
-    /*@GetMapping
-    public ResponseEntity<ApiResponse<Page<ProductDTO>>> getAllProducts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction) {
-
-        Sort sort = direction.equalsIgnoreCase("desc")
-                ? Sort.by(sortBy).descending()
-                : Sort.by(sortBy).ascending();
-
-        Pageable pageable = PageRequest.of(page, size, sort);
-
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "Products fetched successfully",
-                        productser.getAll(pageable)
-                )
-        );
-    }*/
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -143,6 +113,7 @@ public class ProductController {
         return ResponseEntity.ok("Product deleted successfully");
     }
     
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<List<ProductDTO>>> searchByName(
             @RequestParam String name) {
@@ -154,6 +125,7 @@ public class ProductController {
                 ));
     }
     
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/category")
     public ResponseEntity<ApiResponse<List<ProductDTO>>> getByCategory(
             @RequestParam String category) {
@@ -165,6 +137,7 @@ public class ProductController {
                 ));
     }
     
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/brand")
     public ResponseEntity<ApiResponse<List<ProductDTO>>> getByBrand(
             @RequestParam String brand) {
@@ -176,6 +149,7 @@ public class ProductController {
                 ));
     }
     
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/status")
     public ResponseEntity<ApiResponse<List<ProductDTO>>> getByStatus(
             @RequestParam Boolean status) {
@@ -187,6 +161,7 @@ public class ProductController {
                 ));
     }
     
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/barcode/{barcode}")
     public ResponseEntity<ApiResponse<ProductDTO>> getByBarcode(
             @PathVariable String barcode) {
@@ -198,6 +173,7 @@ public class ProductController {
                 ));
     }
     
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/code/{productCode}")
     public ResponseEntity<ApiResponse<ProductDTO>> getByProductCode(
             @PathVariable String productCode) {
@@ -209,43 +185,9 @@ public class ProductController {
                 ));
     }
     
-   /* @GetMapping("/filter")
-    public ResponseEntity<ApiResponse<List<ProductDTO>>> filterProducts(
-
-            @RequestParam(required = false) String category,
-
-            @RequestParam(required = false) String brand,
-
-            @RequestParam(required = false) Boolean status,
-
-            @RequestParam(required = false) BigDecimal minPrice,
-
-            @RequestParam(required = false) BigDecimal maxPrice) {
-
-        return ResponseEntity.ok(
-
-                ApiResponse.success(
-
-                        "Filtered products",
-
-                        productser.filterProducts(
-
-                                category,
-
-                                brand,
-
-                                status,
-
-                                minPrice,
-
-                                maxPrice)
-
-                )
-
-        );
-
-    }*/
+  
     
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping
     public ResponseEntity<ApiResponse<Page<ProductDTO>>> getProducts(
             @RequestParam(required = false) String category,

@@ -33,6 +33,8 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<UserResponse>> register(
             @Valid @RequestBody RegisterRequest request){
+    	
+    	System.out.println("Register API Called");
 
         UserResponse response = authService.register(request);
 
