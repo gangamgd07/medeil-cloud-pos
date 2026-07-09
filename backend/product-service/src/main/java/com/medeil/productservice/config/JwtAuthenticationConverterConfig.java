@@ -21,14 +21,23 @@ public class JwtAuthenticationConverterConfig {
 
         return jwt -> {
 
-            List<String> roles = jwt.getClaimAsStringList("roles");
+        	List<String> roles =
+        	        jwt.getClaimAsStringList("roles");
 
+        	if (roles == null) {
+        	    roles = List.of();
+        	}
+
+        	System.out.println("JWT Roles = " + roles);
+        	
             Collection<GrantedAuthority> authorities =
                     roles.stream()
                          .map(SimpleGrantedAuthority::new)
                          .collect(Collectors.toList());
 
-            return new JwtAuthenticationToken(jwt, authorities);
+            System.out.println("Authorities = " + authorities);
+            
+            return new JwtAuthenticationToken(jwt, authorities, jwt.getSubject());
         };
     }
 
