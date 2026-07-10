@@ -2,9 +2,12 @@ package com.medeil.productservice.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+
+import com.medeil.productservice.dto.feign.InventoryResponse;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -49,5 +52,7 @@ public class ProductDTO {
 	    private LocalDateTime createdDate;
 	    @LastModifiedDate
 	    private LocalDateTime updatedDate;
+	    
+	    private List<InventoryResponse> inventories;
 
 }

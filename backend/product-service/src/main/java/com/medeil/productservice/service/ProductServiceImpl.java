@@ -17,12 +17,15 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.medeil.productservice.dto.ProductDTO;
+import com.medeil.productservice.dto.feign.InventoryResponse;
 import com.medeil.productservice.entity.Product;
 import com.medeil.productservice.exception.DuplicateResourceException;
 import com.medeil.productservice.exception.ResourceNotFoundException;
+import com.medeil.productservice.feign.InventoryClient;
 import com.medeil.productservice.mapper.ProductMapper;
 import com.medeil.productservice.repository.ProductRepository;
 import com.medeil.productservice.specification.ProductSpecification;
+import com.medeil.productservice.util.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +36,10 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductServiceImpl implements ProductService{
 	
 	 private final ProductRepository productrep;
+	 
 	 private final ProductMapper mapper;
+	 
+	 private final InventoryClient inventoryClient;
 
 	@Override
 	public ProductDTO save(ProductDTO dto) {
@@ -54,17 +60,25 @@ public class ProductServiceImpl implements ProductService{
 	@Override
 	@Cacheable(value="products", key="#id")
 	public ProductDTO getById(Long id) {
-		//log.info("Fetching product with ID: {}", id);
-		log.info("Fetching Product From Database...");
-		Product product=productrep.findById(id)
-							/*.orElseThrow(()->{
-								log.error("Product not found with ID: {}", id);
-								return new ResourceNotFoundException("Product not found with id: " + id);
-								});*/
-							.orElseThrow(() ->
-			                new ResourceNotFoundException(
-			                        "Product not found"));
-		return mapper.toDTO(product);
+		 log.info("Fetching Product From Database...");
+
+		    Product product = productrep.findById(id)
+		            .orElseThrow(() ->
+		                    new ResourceNotFoundException("Product not found"));
+
+		    // Convert Entity -> DTO
+		    ProductDTO dto = mapper.toDTO(product);
+
+		    // Call Inventory Service
+		    ApiResponse<List<InventoryResponse>> inventoryResponse =
+		            inventoryClient.getInventoryByProductId(id);
+
+		    // Set Inventory List
+		    if (inventoryResponse != null && inventoryResponse.getData() != null) {
+		        dto.setInventories(inventoryResponse.getData());
+		    }
+
+		    return dto;
 	}
 
 	/*@Override
