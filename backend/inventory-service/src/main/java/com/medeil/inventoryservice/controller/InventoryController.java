@@ -134,5 +134,14 @@ public class InventoryController {
 	                        "Expired Products",
 	                        inventoryService.getExpiredProducts()));
 	    }
+	    
+	    @PostMapping("/stock/add")
+	    public ApiResponse<InventoryDTO> addStock(
+	            @RequestBody InventoryDTO dto) {
+
+	        return ApiResponse.success(
+	                "Stock Updated",
+	                inventoryService.addStock(dto));
+	    }
 
 }

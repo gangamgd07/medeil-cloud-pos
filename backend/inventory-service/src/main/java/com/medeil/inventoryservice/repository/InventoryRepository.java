@@ -23,4 +23,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     List<Inventory> findByExpiryDateBefore(LocalDate date);
 
     boolean existsByBatchNumber(String batchNumber);
+    
+    Optional<Inventory> findByProductIdAndBatchNumber(
+            Long productId,
+            String batchNumber);
 }
