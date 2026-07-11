@@ -2,12 +2,14 @@ package com.medeil.inventoryservice.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.medeil.inventoryservice.dto.InventoryDTO;
 import com.medeil.inventoryservice.entity.Inventory;
+import com.medeil.inventoryservice.exception.ResourceNotFoundException;
 import com.medeil.inventoryservice.mapper.InventoryMapper;
 import com.medeil.inventoryservice.repository.InventoryRepository;
 
@@ -111,6 +113,36 @@ public class InventoryServiceImpl implements InventoryService{
 	            .stream()
 	            .map(mapper::toDTO)
 	            .toList();
+	}
+
+	@Override
+	@Transactional
+	public InventoryDTO addStock(InventoryDTO dto) {
+		 Optional<Inventory> optionalInventory =
+		            repository.findByProductIdAndBatchNumber(
+		                    dto.getProductId(),
+		                    dto.getBatchNumber());
+
+		    Inventory inventory;
+
+		    if (optionalInventory.isPresent()) {
+
+		        // Existing Batch → Increase Quantity
+		        inventory = optionalInventory.get();
+
+		        inventory.setQuantity(
+		                inventory.getQuantity() + dto.getQuantity());
+
+		    } else {
+
+		        // New Batch → Create Inventory
+		        inventory = mapper.toEntity(dto);
+
+		    }
+
+		    Inventory savedInventory = repository.save(inventory);
+
+		    return mapper.toDTO(savedInventory);
 	}
 
 }
