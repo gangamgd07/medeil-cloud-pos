@@ -143,5 +143,20 @@ public class InventoryController {
 	                "Stock Updated",
 	                inventoryService.addStock(dto));
 	    }
+	    
+	    @PutMapping("/reduce")
+	    public ResponseEntity<ApiResponse<InventoryDTO>> reduceStock(
+	            @RequestBody InventoryDTO dto) {
+
+
+	        return ResponseEntity.ok(
+	                ApiResponse.success(
+	                        "Stock Reduced Successfully",
+	                        inventoryService.reduceStock(dto)
+	                )
+	        );
+	    }
+	    
+	    
 
 }

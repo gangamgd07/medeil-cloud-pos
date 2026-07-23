@@ -1,53 +1,46 @@
-package com.medeil.purchaseservice.entity;
+package com.medeil.salesservice.entity;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 
 @Entity
-@Table(name="purchase_items")
+@Table(name="sales_items")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PurchaseItem {
+public class SaleItem {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long purchaseItemId;
-
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long saleItemId;
+	
 	private Long productId;
-
+	
 	private String batchNumber;
-
+	
 	private Integer quantity;
-
-	private BigDecimal purchasePrice;
-
+	
 	private BigDecimal sellingPrice;
-
-	private BigDecimal mrp;
-
+	
 	private Double gst;
-
-	private LocalDate manufactureDate;
-
-	private LocalDate expiryDate;
+	
+	private BigDecimal total;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "purchase_id")
-	private Purchase purchase;
+	@JoinColumn(name = "sale_id")
+	private Sale sale;
 
 }

@@ -25,5 +25,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 	 List<Product> findByStatus(Boolean status);
 
 	 Optional<Product> findByBarcode(String barcode);
+	 
+	
 
 }
