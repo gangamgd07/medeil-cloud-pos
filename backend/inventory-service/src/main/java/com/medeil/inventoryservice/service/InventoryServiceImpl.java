@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.medeil.inventoryservice.dto.InventoryDTO;
 import com.medeil.inventoryservice.entity.Inventory;
-import com.medeil.inventoryservice.exception.ResourceNotFoundException;
 import com.medeil.inventoryservice.mapper.InventoryMapper;
 import com.medeil.inventoryservice.repository.InventoryRepository;
 
@@ -145,4 +144,31 @@ public class InventoryServiceImpl implements InventoryService{
 		    return mapper.toDTO(savedInventory);
 	}
 
+	@Override
+	@Transactional
+	public InventoryDTO reduceStock(InventoryDTO dto) {
+
+	    Inventory inventory =
+	        repository.findByProductIdAndBatchNumber(
+	                dto.getProductId(),
+	                dto.getBatchNumber())
+	        .orElseThrow(() ->
+	            new RuntimeException("Inventory not found"));
+
+	    
+	    if(inventory.getQuantity() < dto.getQuantity()) {
+	        throw new RuntimeException("Insufficient stock");
+	    }
+
+
+	    inventory.setQuantity(
+	        inventory.getQuantity() - dto.getQuantity()
+	    );
+
+
+	    Inventory saved =
+	            repository.save(inventory);
+
+	    return mapper.toDTO(saved);
+	}
 }
