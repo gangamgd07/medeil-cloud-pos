@@ -25,4 +25,6 @@ public interface InventoryService {
     List<InventoryDTO> getExpiredProducts();
     
     InventoryDTO addStock(InventoryDTO dto);
+    
+    InventoryDTO reduceStock(InventoryDTO dto);
 }
